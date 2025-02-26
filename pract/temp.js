@@ -104,7 +104,11 @@ temp.get('/books/:id', async (req,res) => {
 temp.post('/insert/rooms',async (req,res) => {
   try{
   const {room_no,room_type,room_price} = req.body;
+<<<<<<< HEAD
   const result = await db.query(`INSERT INTO rooms (room_no, room_type, room_price) VALUES ('${room_no}', '${room_type}', '${room_price}') RETURNING *;`);
+=======
+  const result = await db.query(`INSERT INTO rooms (room_no, room_type, room_price) VALUES ($1, $2, $3) RETURNING *;`, [room_no, room_type, room_price]);
+>>>>>>> 3bfd2a5f9e04a79d272692e4c7edce030f3be826
   if(room_no && room_price && room_type){
     res.status(200).json(result.rows[0]);
   }
@@ -122,7 +126,11 @@ temp.post('/insert/rooms',async (req,res) => {
 temp.post('/insert/books',async (req,res) => {
   try{
   const {customer_name,room_type,room_price,check_in,check_out} = req.body;
+<<<<<<< HEAD
   const result = await db.query(`SELECT book_room('${customer_name}', '${room_type}', '${room_price}', '${check_in}', '${check_out}');`);
+=======
+  const result = await db.query(`SELECT book_room($1, $2, $3, $4, $5)`,[customer_name, room_type, room_price, check_in, check_out]);
+>>>>>>> 3bfd2a5f9e04a79d272692e4c7edce030f3be826
   // console.log(result.rowCount);
   if(customer_name && room_type && room_price && check_in && check_out){
     res.status(200).json(result.rows[0]);
@@ -141,7 +149,11 @@ temp.post('/insert/books',async (req,res) => {
 temp.post('/cancel', async (req,res) => {
   try{
     const {book_id , name } = req.body;
+<<<<<<< HEAD
     const result = await db.query(`SELECT cancel_room('${book_id}', '${name}');`);
+=======
+    const result = await db.query(`SELECT cancel_room($1, $2)`,[book_id,name]);
+>>>>>>> 3bfd2a5f9e04a79d272692e4c7edce030f3be826
     if(book_id && name){
       res.status(200).json(result.rows[0]);
     }
@@ -161,7 +173,12 @@ temp.put('/update/:id', async (req,res) => {
   try{
     const id = parseInt(req.params.id);
     const {room_no,room_type,room_price} = req.body;
+<<<<<<< HEAD
     const result = await db.query(`UPDATE rooms SET room_no = '${room_no}', room_type = '${room_type}', room_price = '${room_price}' WHERE room_id = '${id}' RETURNING *;`);
+=======
+    const result = await db.query(`UPDATE rooms SET room_no = $1, room_type = $2, room_price = $3 WHERE room_id = $4 RETURNING *;`,
+      [room_no, room_type, room_price, id]);
+>>>>>>> 3bfd2a5f9e04a79d272692e4c7edce030f3be826
       if(result.rows.length != 0){
         res.status(201).json(result.rows);
       }
