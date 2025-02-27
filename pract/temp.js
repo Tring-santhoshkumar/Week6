@@ -47,6 +47,7 @@ temp.get('/',(req,res) => {
   res.json('Welcome To Hotel Booking System!!!');
 })
 
+//Displaying Rooms
 temp.get('/rooms',async (req,res) => {
   try{
     const result = await db.query('SELECT * FROM rooms');
@@ -57,6 +58,7 @@ temp.get('/rooms',async (req,res) => {
   }
 })
 
+//Displaying Bookings
 temp.get('/books', async (req,res) => {
   try{
     const result = await db.query('SELECT * FROM books');
@@ -67,6 +69,7 @@ temp.get('/books', async (req,res) => {
   }
 })
 
+//Displaying the rooms based on room Id
 temp.get('/rooms/:id', async (req,res) => {
   try{
     const id = parseInt(req.params.id);
@@ -84,6 +87,7 @@ temp.get('/rooms/:id', async (req,res) => {
   }
 })
 
+//Displaying Bookings Based on room Id with using joins
 temp.get('/books/:id', async (req,res) => {
   try{
     const id = parseInt(req.params.id);
@@ -100,13 +104,13 @@ temp.get('/books/:id', async (req,res) => {
   }
 })
 
-
+//Inserting new room
 temp.post('/insert/rooms',async (req,res) => {
   try{
   const {room_no,room_type,room_price} = req.body;
   const result = await db.query(`INSERT INTO rooms (room_no, room_type, room_price) VALUES ('${room_no}', '${room_type}', '${room_price}') RETURNING *;`);
   if(room_no && room_price && room_type){
-    res.status(200).json(result.rows[0]);
+    res.status(201).json(result.rows[0]);
   }
   else{
     res.status(400).send('Room Number,Room type,and Room Price are required.');
@@ -118,14 +122,14 @@ temp.post('/insert/rooms',async (req,res) => {
 }
 })
 
-
+//Inserting new bookings by using custom functions
 temp.post('/insert/books',async (req,res) => {
   try{
   const {customer_name,room_type,room_price,check_in,check_out} = req.body;
   const result = await db.query(`SELECT book_room('${customer_name}', '${room_type}', '${room_price}', '${check_in}', '${check_out}');`);
   // console.log(result.rowCount);
   if(customer_name && room_type && room_price && check_in && check_out){
-    res.status(200).json(result.rows[0]);
+    res.status(201).json(result.rows[0]);
   }
   else{
     res.status(400).send('customer_name,room_type,check_in,check_out are required.');
@@ -137,13 +141,13 @@ temp.post('/insert/books',async (req,res) => {
 }
 })
 
-
+//Cancelling bookings by using custom functions
 temp.post('/cancel', async (req,res) => {
   try{
     const {book_id , name } = req.body;
     const result = await db.query(`SELECT cancel_room('${book_id}', '${name}');`);
     if(book_id && name){
-      res.status(200).json(result.rows[0]);
+      res.status(202).json(result.rows[0]);
     }
     else{
       res.status(400).send('Id and name are required.');
@@ -151,19 +155,19 @@ temp.post('/cancel', async (req,res) => {
   }
   catch(err){
     console.log(err);
-    res.status(500).send('Internal Server Error From delete');
+    res.status(500).send('Internal Server Error From Cancel');
   }
 })
 
 
-
-temp.put('/update/:id', async (req,res) => {
+//Updating rooms details by room_id
+temp.put('/update/rooms/:id', async (req,res) => {
   try{
     const id = parseInt(req.params.id);
     const {room_no,room_type,room_price} = req.body;
     const result = await db.query(`UPDATE rooms SET room_no = '${room_no}', room_type = '${room_type}', room_price = '${room_price}' WHERE room_id = '${id}' RETURNING *;`);
       if(result.rows.length != 0){
-        res.status(201).json(result.rows);
+        res.status(202).json(result.rows);
       }
       else{
         res.status(404).send('Given id room is not available.');
@@ -171,17 +175,35 @@ temp.put('/update/:id', async (req,res) => {
   }
   catch{
     console.log(err);
-    res.status(500).send('Internal Server Error From Update');
+    res.status(500).send('Internal Server Error From Update Rooms.');
   }
 })
 
+//Updating bookings details by book_id
+temp.put('/update/books/:id', async (req,res) => {
+  try{
+    const id = parseInt(req.params.id);
+    const {customer_name,check_in,check_out} = req.body;
+    const result = await db.query(`UPDATE books SET customer_name = '${customer_name}', check_in = '${check_in}', check_out = '${check_out}' WHERE book_id = '${id}' RETURNING *;`);
+    if(result.rows.length != 0){
+      res.status(202).json(result.rows);
+    }
+    else{
+      res.status(404).send('Given id booking is not available.');
+    }
+  }
+  catch{
+    res.status(500).send('Internal Server Error From Update Bookings.');
+  }
+})
 
+//Deleting rooms by room Id
 temp.delete('/delete/:id', async (req,res) => {
   try{
     const id = parseInt(req.params.id);
     const result = await db.query(`DELETE FROM rooms WHERE room_id = '${id}'`);
     if(result.rowCount > 0){
-      res.status(200).send('Succesfully Deleted!');
+      res.status(202).send('Succesfully Deleted!');
     }
     else{
       res.status(404).send('Given id room is not available.');
