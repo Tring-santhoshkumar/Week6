@@ -5,43 +5,98 @@ const db = require('./db');
 const port = process.env.PORT || 3000;
 temp.use(bodyParser.json());
 
-// let foods = [{
-//     "id": 1,
-//     "Name": "Santhosh",
-//     "Age" : '21',
-//     "College" : 'NEC'
-//   },
-//   {
-//     "id": 2,
-//     "Name": "Gokul",
-//     "Age" : '22',
-//     "College" : 'SJEC'
-//   },
-//   {
-//     "id": 3,
-//     "Name": "Dipshy",
-//     "Age" : '21',
-//     "College" : 'AVV'
-//   },{
-//    "id": 4,
-//     "Name": "Gowreesh",
-//     "Age" : '21',
-//     "College" : 'SCE'
-//   },{
-//     'id' : 5,
-//     'Name' : 'Sana',
-//     'Age' : 21,
-//     'College' :  'PSG'
-//   }
-//   ];
+let users = [{
+    "id": 1,
+    "name": "Santhosh",
+    "age" : 21,
+    "college" : 'NEC'
+  },
+  {
+    "id": 2,
+    "name": "Gokul",
+    "age" : 22,
+    "college" : 'SJEC'
+  },
+  {
+    "id": 3,
+    "name": "Dipshy",
+    "age" : 21,
+    "college" : 'AVV'
+  },{
+   "id": 4,
+    "name": "Gowreesh",
+    "age" : 21,
+    "college" : 'SCE'
+  },{
+    'id' : 5,
+    'name' : 'Sana',
+    'age' : 21,
+    'college' :  'PSG'
+  }
+  ];
 
-// temp.get('/:id', (req,res) => {
-//     // res.write('Hello World From Express!');
-//     let foodId = parseInt(req.params.id);
-//     let food = foods.find(food => food.id === foodId);
-//     res.json(food);
-//     res.end();
-// })
+  temp.get('/users', (_req,res) => {
+    res.status(200).json(users);
+  })
+
+  temp.get('/users/:id', (req,res) => {
+    // res.write('Hello World From Express!');
+    const userId = parseInt(req.params.id);
+    const userData = users.find(user => user.id == userId);
+    if(userData){
+      res.status(200).json(userData);
+    }
+    else{
+      res.status(404).send('No Id matches with the users.');
+    }
+  })
+
+  temp.post('/insertUsers', (req,res) => {
+    const {id,name,age,college} = req.body;
+    const newData = {'id': id,'name' : name,'age' : age,'college' : college};
+    users.push(newData);
+    if(id && name && age && college){
+      res.status(201).json(newData);
+    }
+    else{
+      res.status(404).send('All Fields are required.');
+    }
+  })
+
+  temp.put('/updateUsers/:id',(req,res) => {
+    const userId = parseInt(req.params.id);
+    const {id,name,age,college} = req.body;
+    const userData = users.find(user => user.id == userId);
+    if(userData){
+      userData.id = id; userData.name = name, userData.age = age, userData.college = college;
+      res.status(200).json(userData);
+    }
+    else{
+      res.status(404).send('No Id matches with the users.');
+    }
+  })
+
+  temp.delete('/deleteUsers/:id',(req,res) => {
+    const userId = parseInt(req.params.id);
+    const userData = users.find(user => user.id == userId);
+    if(userData){
+      const index = users.indexOf(userData);
+      users.splice(index,1);
+      res.status(200).send('Successfully deleted!');
+    }
+    else{
+      res.status(404).send('No Id matches with users.');
+    }
+  })
+
+
+
+
+
+
+
+
+
 
 temp.get('/',(req,res) => {
   res.json('Welcome To Hotel Booking System!!!');
