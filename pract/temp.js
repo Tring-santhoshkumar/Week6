@@ -68,7 +68,7 @@ let users = [{
     const {id,name,age,college} = req.body;
     const userData = users.find(user => user.id == userId);
     if(userData){
-      userData.id = id; userData.name = name, userData.age = age, userData.college = college;
+      userData.id = id; userData.name = name; userData.age = age; userData.college = college;
       res.status(200).json(userData);
     }
     else{

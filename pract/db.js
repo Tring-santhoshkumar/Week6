@@ -5,7 +5,7 @@ const pool = new Pool({
     user : 'postgres',
     password : 'postgres',
     host :  'localhost',
-    database : 'mainTask',
+    database : 'graphqlDb',
     port : 5432
 });
 
